@@ -55,7 +55,7 @@ public class MiniSpringApplicationContext {
 
                             if(aClass.isAnnotationPresent(Component.class)){
                                 //bean
-                                System.out.println("bean is " + aClass.getName());
+                                System.out.println("bean is   " + aClass.getName());
                             }
 
 
