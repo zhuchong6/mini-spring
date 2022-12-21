@@ -10,7 +10,7 @@ import com.zhu.spring.MiniSpringApplicationContext;
 public class Test {
     public static void main(String[] args) {
         MiniSpringApplicationContext miniSpringApplicationContext = new MiniSpringApplicationContext(AppConfig.class);
-
+        //test
         UserService userService = (UserService) miniSpringApplicationContext.getBean("userService");
     }
 }
