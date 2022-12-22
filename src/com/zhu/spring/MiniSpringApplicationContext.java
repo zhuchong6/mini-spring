@@ -122,6 +122,12 @@ public class MiniSpringApplicationContext {
                 ((BeanNameAware)instance).setBeanName(beanName);
             }
 
+            //check initalizing bean
+            if (instance instanceof InitializingBean) {
+                //force cast to BeanNameAare and call its method
+                ((InitializingBean)instance).afterPropertiesSet();
+            }
+
 
             return instance;
         } catch (InstantiationException e) {
@@ -131,6 +137,8 @@ public class MiniSpringApplicationContext {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

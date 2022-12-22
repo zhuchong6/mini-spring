@@ -8,5 +8,5 @@ and the main function of the framework is :
 + DI/IOC ✅
 + AOP
 + Aware call back ✅
-+ Initialization
++ Initialization ✅
 + BeanPostProcessor
