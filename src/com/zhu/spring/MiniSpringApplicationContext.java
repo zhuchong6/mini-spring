@@ -1,6 +1,7 @@
 package com.zhu.spring;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +16,7 @@ public class MiniSpringApplicationContext {
     private Class configClass;
 
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
 
     public MiniSpringApplicationContext(Class configClass) {
         this.configClass = configClass;
@@ -34,12 +36,10 @@ public class MiniSpringApplicationContext {
             URL resource = classLoader.getResource(path);
 
             File file = new File(resource.getFile());
-            System.out.println(file);
             if(file.isDirectory()){
                 File[] files = file.listFiles();
                 for (File f : files) {
                     String absolutePath = f.getAbsolutePath();
-                    System.out.println(absolutePath);
                     if(absolutePath.endsWith(".class")){
                         //real load class
 
@@ -51,7 +51,6 @@ public class MiniSpringApplicationContext {
 
                             //com.zhu.service.UserService
                             className = className.replace("/", ".");
-                            System.out.println(className);
 
                         try {
                             Class<?> clazz = classLoader.loadClass(className);
@@ -82,10 +81,54 @@ public class MiniSpringApplicationContext {
 
         }
 
+        //create bean
+        for (String beanName : beanDefinitionMap.keySet()) {
+            BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
+            if(beanDefinition.getScope().equals("singleton")){
+                Object bean = createBean(beanName, beanDefinition);
+                singletonObjects.put(beanName, bean);
+            }
+        }
+
+    }
+
+    private Object createBean(String beanName, BeanDefinition beanDefinition){
+
+        Class clazz = beanDefinition.getType();
+        Object o = null;
+        try {
+            o = clazz.getConstructor().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return o;
     }
 
     public Object getBean(String beanName){
 
-        return null;
+        BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
+
+        if(beanDefinition == null){
+            throw new RuntimeException("class not found with bean name:"+beanName);
+        }
+
+        String scope = beanDefinition.getScope();
+        if("singleton".equals(scope)){
+            Object bean = singletonObjects.get(beanName);
+            if(bean == null){
+                Object createdBean = createBean(beanName, beanDefinition);
+                singletonObjects.put(beanName, createdBean);
+                return createdBean;
+            }
+            return bean;
+        }else{
+            return createBean(beanName, beanDefinition);
+        }
     }
 }

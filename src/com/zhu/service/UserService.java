@@ -9,6 +9,6 @@ import com.zhu.spring.Scope;
  * @date 2022/12/21 21:08
  */
 @Component("userService")
-@Scope("singleton")
+@Scope("prototype")
 public class UserService {
 }
