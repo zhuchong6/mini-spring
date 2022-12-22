@@ -4,8 +4,8 @@ and the main function of the framework is :
 + Container Starting ✅
 + BeanDefinition Scanning ✅
 + Lifecycle of Beans
-+ Singleton
-+ DI/IOC
++ Singleton ✅
++ DI/IOC ✅
 + AOP
 + Aware call back
 + Initialization

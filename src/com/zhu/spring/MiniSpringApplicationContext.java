@@ -1,6 +1,8 @@
 package com.zhu.spring;
 
+import java.beans.Introspector;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Map;
@@ -59,7 +61,10 @@ public class MiniSpringApplicationContext {
 
                                 Component componentAnnotation = clazz.getAnnotation(Component.class);
                                 String beanName = componentAnnotation.value();
-
+                                if("".equals(beanName)){
+                                    //transfer name ,eg: Service->service SService->SService, SerR->serR
+                                    beanName = Introspector.decapitalize(clazz.getSimpleName());
+                                }
                                 //generate BeanDefinition
                                 BeanDefinition beanDefinition = new BeanDefinition();
                                 beanDefinition.setType(clazz);
@@ -95,9 +100,24 @@ public class MiniSpringApplicationContext {
     private Object createBean(String beanName, BeanDefinition beanDefinition){
 
         Class clazz = beanDefinition.getType();
-        Object o = null;
+
         try {
-            o = clazz.getConstructor().newInstance();
+            Object instance = clazz.getConstructor().newInstance();
+
+            // simple dependency injection
+            for (Field field : clazz.getDeclaredFields()) {
+
+                if (field.isAnnotationPresent(Autowired.class)) {
+                    //change true ,can assign private
+                    field.setAccessible(true);
+                    String fieldName = field.getName();
+                    Object bean = getBean(fieldName);
+                    field.set(instance, bean);
+                }
+            }
+
+
+            return instance;
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -107,7 +127,7 @@ public class MiniSpringApplicationContext {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        return o;
+        return null;
     }
 
     public Object getBean(String beanName){
