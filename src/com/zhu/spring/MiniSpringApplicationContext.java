@@ -5,6 +5,8 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +21,7 @@ public class MiniSpringApplicationContext {
 
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
+    private List<BeanPostProcessor> beanPostProcessorList = new ArrayList<>();
 
     public MiniSpringApplicationContext(Class configClass) {
         this.configClass = configClass;
@@ -59,6 +62,11 @@ public class MiniSpringApplicationContext {
 
                             if(clazz.isAnnotationPresent(Component.class)){
 
+                                if(BeanPostProcessor.class.isAssignableFrom(clazz)){
+                                    BeanPostProcessor instance = (BeanPostProcessor)clazz.newInstance();
+                                    beanPostProcessorList.add(instance);
+                                }
+
                                 Component componentAnnotation = clazz.getAnnotation(Component.class);
                                 String beanName = componentAnnotation.value();
                                 if("".equals(beanName)){
@@ -78,6 +86,10 @@ public class MiniSpringApplicationContext {
                             }
 
                         } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     }
@@ -122,10 +134,21 @@ public class MiniSpringApplicationContext {
                 ((BeanNameAware)instance).setBeanName(beanName);
             }
 
+            //before init
+            for (BeanPostProcessor beanPostProcessor : beanPostProcessorList) {
+                beanPostProcessor.postProcessBeforeInitialization(instance, beanName);
+            }
+
             //check initalizing bean
             if (instance instanceof InitializingBean) {
                 //force cast to BeanNameAare and call its method
                 ((InitializingBean)instance).afterPropertiesSet();
+            }
+
+
+            //after init
+            for (BeanPostProcessor beanPostProcessor : beanPostProcessorList) {
+                beanPostProcessor.postProcessAfterInitialization(instance, beanName);
             }
 
 
