@@ -7,6 +7,6 @@ and the main function of the framework is :
 + Singleton ✅
 + DI/IOC ✅
 + AOP
-+ Aware call back
++ Aware call back ✅
 + Initialization
 + BeanPostProcessor

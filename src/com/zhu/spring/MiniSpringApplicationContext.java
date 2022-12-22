@@ -116,6 +116,12 @@ public class MiniSpringApplicationContext {
                 }
             }
 
+            //check bean name aware
+            if (instance instanceof BeanNameAware) {
+                //force cast to BeanNameAare and call its method
+                ((BeanNameAware)instance).setBeanName(beanName);
+            }
+
 
             return instance;
         } catch (InstantiationException e) {
