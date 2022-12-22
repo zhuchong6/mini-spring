@@ -1,8 +1,9 @@
 package com.zhu.spring;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author by zhuhcong
@@ -12,6 +13,8 @@ import java.net.URL;
 public class MiniSpringApplicationContext {
 
     private Class configClass;
+
+    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
 
     public MiniSpringApplicationContext(Class configClass) {
         this.configClass = configClass;
@@ -51,18 +54,28 @@ public class MiniSpringApplicationContext {
                             System.out.println(className);
 
                         try {
-                            Class<?> aClass = classLoader.loadClass(className);
+                            Class<?> clazz = classLoader.loadClass(className);
 
-                            if(aClass.isAnnotationPresent(Component.class)){
-                                //bean
-                                System.out.println("bean is   " + aClass.getName());
+                            if(clazz.isAnnotationPresent(Component.class)){
+
+                                Component componentAnnotation = clazz.getAnnotation(Component.class);
+                                String beanName = componentAnnotation.value();
+
+                                //generate BeanDefinition
+                                BeanDefinition beanDefinition = new BeanDefinition();
+                                beanDefinition.setType(clazz);
+                                if (clazz.isAnnotationPresent(Scope.class)) {
+                                    Scope scopeAnnotation = clazz.getAnnotation(Scope.class);
+                                    beanDefinition.setScope(scopeAnnotation.value());
+                                }else{
+                                    beanDefinition.setScope("singleton");
+                                }
+                                beanDefinitionMap.put(beanName, beanDefinition);
                             }
-
 
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
             }

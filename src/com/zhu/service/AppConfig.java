@@ -1,6 +1,5 @@
 package com.zhu.service;
 
-import com.zhu.spring.Component;
 import com.zhu.spring.ComponentScan;
 
 /**
