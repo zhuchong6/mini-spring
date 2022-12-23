@@ -136,7 +136,7 @@ public class MiniSpringApplicationContext {
 
             //before init
             for (BeanPostProcessor beanPostProcessor : beanPostProcessorList) {
-                beanPostProcessor.postProcessBeforeInitialization(instance, beanName);
+                instance = beanPostProcessor.postProcessBeforeInitialization(instance, beanName);
             }
 
             //check initalizing bean
@@ -148,7 +148,7 @@ public class MiniSpringApplicationContext {
 
             //after init
             for (BeanPostProcessor beanPostProcessor : beanPostProcessorList) {
-                beanPostProcessor.postProcessAfterInitialization(instance, beanName);
+                instance = beanPostProcessor.postProcessAfterInitialization(instance, beanName);
             }
 
 

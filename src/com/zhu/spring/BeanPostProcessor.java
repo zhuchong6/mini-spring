@@ -9,10 +9,10 @@ public interface BeanPostProcessor {
     /**
      * do something before init
      */
-    void postProcessBeforeInitialization(Object bean, String beanName);
+    Object postProcessBeforeInitialization(Object bean, String beanName);
 
     /**
      * do something after init
      */
-    void postProcessAfterInitialization(Object bean, String beanName);
+    Object postProcessAfterInitialization(Object bean, String beanName);
 }

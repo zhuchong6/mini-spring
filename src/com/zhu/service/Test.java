@@ -11,7 +11,7 @@ public class Test {
     public static void main(String[] args) {
         MiniSpringApplicationContext miniSpringApplicationContext = new MiniSpringApplicationContext(AppConfig.class);
 
-        UserService userService = (UserService)miniSpringApplicationContext.getBean("userService");
+        UserInterface userService = (UserInterface)miniSpringApplicationContext.getBean("userService");
         userService.test();
 
     }

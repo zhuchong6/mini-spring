@@ -6,7 +6,7 @@ and the main function of the framework is :
 + Lifecycle of Beans
 + Singleton ✅
 + DI/IOC ✅
-+ AOP
++ AOP ✅
 + Aware call back ✅
 + Initialization ✅
 + BeanPostProcessor ✅

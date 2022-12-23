@@ -9,13 +9,14 @@ import com.zhu.spring.*;
  */
 @Component
 @Scope("singleton")
-public class UserService implements BeanNameAware, InitializingBean {
+public class UserService implements BeanNameAware, InitializingBean, UserInterface {
 
     @Autowired
     private OrderService orderService;
 
     private String beanName;
 
+    @Override
     public void test(){
         System.out.println(orderService+"|"+beanName);
     }
